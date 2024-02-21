@@ -1,0 +1,50 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+  pre_build:
+    commands:
+      - echo Environments
+      - |
+        REGION=${AWS_REGION}
+        ACCOUNT_ID=$(echo $CODEBUILD_BUILD_ARN | cut -f5 -d ':')
+        REPOSITORY_NAME=$(echo $CODEBUILD_SOURCE_VERSION | cut -f2 -d '/')
+        REPOSITORY_URI=${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPOSITORY_NAME}
+        COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+        IMAGE_TAG=${COMMIT_HASH:=latest}
+      - |
+        echo REGION=${REGION}
+        echo ACCOUNT_ID=${ACCOUNT_ID}
+        echo REPOSITORY_NAME=${REPOSITORY_NAME}
+        echo REPOSITORY_URI=${REPOSITORY_URI}
+        echo COMMIT_HASH=${COMMIT_HASH}
+        echo IMAGE_TAG=${IMAGE_TAG}
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building Java application.
+      - |
+        chmod +x ./gradlew
+        ./gradlew clean build -Pcodebuild
+      - echo Building the Docker image.
+      - docker build -t ${REPOSITORY_URI}:latest .
+      - docker tag ${REPOSITORY_URI}:latest ${REPOSITORY_URI}:${IMAGE_TAG}
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push ${REPOSITORY_URI}:latest
+      - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
+      - echo Writing image definitions file...
+      - printf '[{"name":"%s","imageUri":"%s"}]' ${REPOSITORY_NAME} ${REPOSITORY_URI}:${IMAGE_TAG} > imagedefinitions_dev.json
+      - zip ${REPOSITORY_NAME}_imagedefinitions_dev.json.zip imagedefinitions_dev.json
+      - aws s3 cp ${REPOSITORY_NAME}_imagedefinitions_dev.json.zip s3://${ACCOUNT_ID}-image-definition-bucket/
+cache:
+  paths:
+    - '/root/.gradle/caches/**/*'
+artifacts:
+    files: imagedefinitions_dev.json

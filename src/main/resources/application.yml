@@ -1,0 +1,42 @@
+server:
+  port: 8080
+  error:
+    include-stacktrace: never
+
+spring:
+  application:
+    name: API
+  profiles:
+    group:
+      local: local-api
+      dev: dev-api
+      prod: prod-api
+      stg: stg-api
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local-api
+    import: classpath:local-api.yml
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev-api
+    import: classpath:dev-api.yml
+
+---
+spring:
+  config:
+    activate:
+      on-profile: stg-api
+    import: classpath:stg-api.yml
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod-api
+    import: classpath:prod-api.yml

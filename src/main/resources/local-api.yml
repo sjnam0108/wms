@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://211.219.112.253:23013/bms
+    username: bms
+    password: bms01
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+#    org.mybatis: debug
+    com:
+      bmp:
+        wms: debug
+  config: classpath:logback-local.xml
+
+file:
+  basedir: C:/upload
+
+#jwt:
+#  secret: n674pjdp2bcp3shuu5hsvxsxdb3yusmzlmy8jkybq2dos2om0avgn108nc0yl23t
+#  token-valid-seconds: 300
+#
+#jasypt:
+#  key: mEdddrAGiIYdOpkQipi9gfSefYwaq4SHuLp0uQTbud3ceFL7pcWbPmhu4Kf1PX84
+#  encryptor:
+#    bean: jasyptStringEncryptor
+#
+#mybatis:
+#  mapper-locations:
+#    - classpath:mapper/**/*.xml
+#
+#springdoc:
+#  packages-to-scan: com.bmp.cnms
+#  swagger-ui:
+#    enabled: true
+#  api-docs:
+#    path: /v3/api-docs
+#  cache:
+#    disabled: true
+
