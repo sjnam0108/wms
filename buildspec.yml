@@ -41,8 +41,8 @@ phases:
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
       - echo Writing image definitions file...
       - printf '[{"name":"%s","imageUri":"%s"}]' ${REPOSITORY_NAME} ${REPOSITORY_URI}:${IMAGE_TAG} > imagedefinitions_dev.json
-      - zip ${REPOSITORY_NAME}_imagedefinitions_dev.json.zip imagedefinitions_dev.json
-      - aws s3 cp ${REPOSITORY_NAME}_imagedefinitions_dev.json.zip s3://${ACCOUNT_ID}-image-definition-bucket/
+      - zip aaa000-${REPOSITORY_NAME}_imagedefinitions_dev.json.zip imagedefinitions_dev.json
+      - aws s3 cp aaa000-${REPOSITORY_NAME}_imagedefinitions_dev.json.zip s3://${ACCOUNT_ID}-image-definition-bucket/
 cache:
   paths:
     - '/root/.gradle/caches/**/*'
