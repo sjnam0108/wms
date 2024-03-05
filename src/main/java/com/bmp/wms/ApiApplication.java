@@ -1,4 +1,4 @@
-package com.bmp.dts;
+package com.bmp.wms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -2,7 +2,7 @@
 <configuration scan="true" scanPeriod="300 seconds">
     <springProperty scope="context" name="LOG_LEVEL" source="INFO"/>
 
-    <property name="LOG_PATH" value="./log"/>
+    <property name="LOG_PATH" value="C:/log"/>
     <property name="LOG_FILE_NAME" value="local_log"/>
     <property name="ERR_LOG_FILE_NAME" value="err_log"/>
     <property name="LOG_PATTERN"
@@ -43,8 +43,8 @@
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
-        <appender-ref ref="Error"/>
+<!--        <appender-ref ref="FILE"/>-->
+<!--        <appender-ref ref="Error"/>-->
     </root>
 
 </configuration>

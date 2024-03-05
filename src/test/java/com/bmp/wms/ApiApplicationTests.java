@@ -1,4 +1,4 @@
-package com.bmp.dts;
+package com.bmp.wms;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

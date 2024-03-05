@@ -3,12 +3,26 @@ server:
   error:
     include-stacktrace: never
 
+mybatis:
+#  config-location: classpath:mybatis-config.xml
+  mapper-locations:
+    - classpath:mapper/**/*.xml
+
+springdoc:
+  packages-to-scan: com.bmp.dts
+  swagger-ui:
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+  cache:
+    disabled: true
+
 spring:
   application:
-    name: API
+    name: API WMS
   profiles:
     group:
-      local: local-api
+      local: local-api, swagger-ui
       dev: dev-api
       prod: prod-api
       stg: stg-api

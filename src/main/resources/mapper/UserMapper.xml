@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bmp.wms.mapper.UserMapper">
+
+    <!-- resultMap 정의 -->
+    <resultMap type="com.bmp.wms.domain.User" id="userResultMap">
+        <result property="usrNo" column="usr_no"/>
+        <result property="usrId" column="usr_id"/>
+        <result property="tnntId" column="tnnt_id"/>
+        <result property="nm" column="nm"/>
+        <result property="mblTelNo" column="mbl_tel_no"/>
+        <result property="telNo" column="tel_no"/>
+        <result property="usrType" column="usr_type"/>
+        <result property="acntUseBgngDay" column="acnt_use_bgng_day"/>
+        <result property="acntUseEndDay" column="acnt_use_end_day"/>
+        <result property="jbgdNo" column="jbgd_no"/>
+        <result property="jbttlCd" column="jbttl_cd"/>
+        <result property="zip" column="zip"/>
+        <result property="bscAddr" column="bsc_addr"/>
+        <result property="dtlAddr" column="dtl_addr"/>
+        <result property="stts" column="stts"/>
+        <result property="eml" column="eml"/>
+        <result property="confirm" column="confirm"/>
+        <result property="prflFileUrl" column="prfl_file_url"/>
+        <result property="prflOrgFileNm" column="prfl_org_file_nm"/>
+        <result property="prflSaveFileNm" column="prfl_save_file_nm"/>
+        <result property="lastCntnDt" column="last_cntn_dt"/>
+        <result property="rgstUserId" column="rgst_user_id"/>
+        <result property="rgstUserIp" column="rgst_user_ip"/>
+        <result property="rgstDtm" column="rgst_dtm"/>
+        <result property="updUserId" column="upd_user_id"/>
+        <result property="updUserIp" column="upd_user_ip"/>
+        <result property="updDtm" column="upd_dtm"/>
+    </resultMap>
+
+    <!-- 시퀀스 조회 -->
+    <select id="getNextUserSeq" resultType="java.math.BigDecimal">
+        SELECT nextval('schm_common.usr_no_seq');
+    </select>
+
+    <select id="getUserByUsrId" resultMap="userResultMap">
+        SELECT
+        usr_no,
+        usr_id,
+        tnnt_id,
+        nm,
+        mbl_tel_no,
+        tel_no,
+        usr_type,
+        acnt_use_bgng_day,
+        acnt_use_end_day,
+        jbgd_no,
+        jbttl_cd,
+        zip,
+        bsc_addr,
+        dtl_addr,
+        stts,
+        eml,
+        confirm,
+        prfl_file_url,
+        prfl_org_file_nm,
+        prfl_save_file_nm,
+        last_cntn_dt,
+        rgst_user_id,
+        rgst_user_ip,
+        rgst_dtm,
+        upd_user_id,
+        upd_user_ip,
+        upd_dtm
+        FROM schm_common.tb_mst211m WHERE usr_id = #{usr_id}
+    </select>
+
+    <!-- 사용자 전체 조회 -->
+    <select id="getAllUserCount" parameterType="com.bmp.wms.util.PageUtil" resultType="int">
+        SELECT count(*) FROM schm_common.tb_mst211m
+        WHERE 1=1
+        <if test="searchString != ''">
+            <if test="searchColumn != 'usr_id'">
+                AND user_id LIKE '%' || #{searchString} || '%'
+            </if>
+            <if test="searchColumn != 'nm'">
+                AND nm LIKE '%' || #{searchString} || '%'
+            </if>
+        </if>
+    </select>
+
+    <!-- 사용자 전체 조회 -->
+    <select id="getAllUserList" parameterType="com.bmp.wms.util.PageUtil" resultMap="userResultMap">
+        SELECT
+        usr_no,
+        usr_id,
+        tnnt_id,
+        nm,
+        mbl_tel_no,
+        tel_no,
+        usr_type,
+        acnt_use_bgng_day,
+        acnt_use_end_day,
+        jbgd_no,
+        jbttl_cd,
+        zip,
+        bsc_addr,
+        dtl_addr,
+        stts,
+        eml,
+        confirm,
+        prfl_file_url,
+        prfl_org_file_nm,
+        prfl_save_file_nm,
+        last_cntn_dt,
+        rgst_user_id,
+        rgst_user_ip,
+        rgst_dtm,
+        upd_user_id,
+        upd_user_ip,
+        upd_dtm
+        FROM schm_common.tb_mst211m
+        WHERE 1=1
+        <if test="searchString != ''">
+            <if test="searchColumn != 'usr_id'">
+                AND usr_id LIKE '%' || #{searchString} || '%'
+            </if>
+            <if test="searchColumn != 'nm'">
+                AND nm LIKE '%' || #{searchString} || '%'
+            </if>
+        </if>
+        ORDER BY usr_no
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 사용자 정보 업데이트 -->
+    <update id="updateUser" parameterType="com.bmp.wms.domain.User">
+        UPDATE schm_common.tb_mst211m
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="nm != null">nm = #{nm},</if>
+            <if test="mblTelNo != null">mbl_tel_no = #{mblTelNo},</if>
+            <if test="usrType != null">usr_type = #{usrType},</if>
+            <if test="acntUseBgngDay != null">acnt_use_bgng_day = #{acntUseBgngDay},</if>
+            <if test="acntUseEndDay != null">acnt_use_end_day = #{acntUseEndDay},</if>
+            <if test="jbgdNo != null">jbgd_no = #{jbgdNo},</if>
+            <if test="jbttlCd != null">jbttl_cd = #{jbttlCd},</if>
+            <if test="zip != null">zip = #{zip},</if>
+            <if test="bscAddr != null">bsc_addr = #{bscAddr},</if>
+            <if test="dtlAddr != null">dtl_addr = #{dtlAddr},</if>
+            <if test="stts != null">stts = #{stts},</if>
+            <if test="eml != null">eml = #{eml},</if>
+            <if test="confirm != null">confirm = #{confirm},</if>
+            <if test="prflFileUrl != null">prfl_file_url = #{prflFileUrl},</if>
+            <if test="prflOrgFileNm != null">prfl_org_file_nm = #{prflOrgFileNm},</if>
+            <if test="prflSaveFileNm != null">prfl_save_file_nm = #{prflSaveFileNm},</if>
+            <if test="updUserId != null">upd_user_id = #{updUserId},</if>
+            <if test="updUserIp != null">upd_user_ip = #{updUserIp},</if>
+            upd_dtm = now(),
+        </trim>
+        WHERE usr_id = #{usrId}
+    </update>
+
+</mapper>

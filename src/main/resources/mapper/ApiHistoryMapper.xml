@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bmp.wms.mapper.ApiHistoryMapper">
+
+    <insert id="createApiHistory" parameterType="com.bmp.wms.domain.ApiHistory">
+        INSERT INTO schm_common.tb_mst300h
+        (
+        "api_no",
+        "transaction_id",
+        "api_nm",
+        "request_system",
+        "request_dtm",
+        "outside_api_nm",
+        "outside_api_call_dtm",
+        "create_dtm",
+        "response_result",
+        "result_code",
+        "request_desc",
+        "response_desc",
+        "rgst_user_ip",
+        "rgst_dtm"
+        )
+        VALUES
+        (
+        nextval('schm_common.api_no_seq'),
+        #{transactionId},
+        #{apiNm},
+        #{requestSystem},
+        #{requestDtm},
+        #{outsideApiNm},
+        #{outsideApiCallDtm},
+        #{createDtm},
+        #{responseResult},
+        #{resultCode},
+        #{requestDesc},
+        #{responseDesc},
+        #{rgstUserIp},
+        now()
+        )
+    </insert>
+</mapper>

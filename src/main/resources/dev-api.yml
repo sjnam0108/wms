@@ -6,37 +6,9 @@ spring:
     driver-class-name: org.postgresql.Driver
 
 logging:
-#  file:
-#    path: /home/cnms/log
-#    filename: dev_log
   level:
     root: info
     com:
       bmp:
-        wms: debug
+        wms: info
   config: classpath:logback-dev.xml
-
-file:
-  basedir: /home/bmp/upload
-
-#jwt:
-#  secret: n674pjdp2bcp3shuu5hsvxsxdb3yusmzlmy8jkybq2dos2om0avgn108nc0yl23t
-#  token-valid-seconds: 600
-#
-#jasypt:
-#  key: mEdddrAGiIYdOpkQipi9gfSefYwaq4SHuLp0uQTbud3ceFL7pcWbPmhu4Kf1PX84
-#  encryptor:
-#    bean: jasyptStringEncryptor
-#
-#mybatis:
-#  mapper-locations:
-#    - classpath:mapper/**/*.xml
-#
-#springdoc:
-#  packages-to-scan: com.bmp.cnms
-#  swagger-ui:
-#    enabled: true
-#  api-docs:
-#    path: /v3/api-docs
-#  cache:
-#    disabled: true
