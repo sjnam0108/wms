@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bmp.wms.mapper.AttendMapper">
+
+    <resultMap type="com.bmp.wms.domain.Attend" id="attendResultMap">
+        <result property="mtgAtndNo" column="mtg_atnd_no"/>
+        <result property="usrNo" column="usr_no"/>
+        <result property="mtgRsvtUnqNo" column="mtg_rsvt_unq_no"/>
+        <result property="mtgSeatUnqNo" column="mtg_seat_unq_no"/>
+        <result property="vstrUnqNo" column="vstr_unq_no"/>
+        <result property="ognzNo" column="ognz_no"/>
+        <result property="ognzNm" column="ognz_nm"/>
+        <result property="jbgdNo" column="jbgd_no"/>
+        <result property="jbgdNm" column="jbgd_nm"/>
+        <result property="atdNm" column="atd_nm"/>
+    </resultMap>
+
+    <!-- 시퀀스 조회 -->
+    <select id="getNextAttendSeq" resultType="java.math.BigDecimal">
+        SELECT nextval('schm_wms.mtg_atnd_no_seq');
+    </select>
+
+    <insert id="createAttend" parameterType="com.bmp.wms.domain.Attend">
+
+        Insert Into schm_wms.tb_wms101d(
+        "mtg_atnd_no",
+        "usr_no",
+        "mtg_rsvt_unq_no",
+        "vstr_unq_no",
+        "ognz_no",
+        "ognz_nm",
+        "jbgd_no",
+        "jbgd_nm",
+        "atd_nm"
+        )
+        values
+        <foreach collection="entry" item="item" separator=",">
+        (
+            nextval('schm_wms.mtg_atnd_no_seq'),
+            (select usr_no from schm_common.tb_mst211m where nm = #{item.entryName}),
+            (CURRVAL('schm_wms.mtg_rsvt_unq_no_seq')),
+            (select vstr_unq_no from schm_common.tb_mst210m where nm = #{item.entryName}),
+            (select ognz_no from schm_common.tb_mst212m where usr_no =(select usr_no from schm_common.tb_mst211m where nm =#{item.entryName})),
+            (select ognz_nm from schm_common.tb_mst208m where ognz_no = (select ognz_no from schm_common.tb_mst212m where usr_no =(select usr_no from schm_common.tb_mst211m where nm =#{item.entryName}))),
+            (select jbgd_no from schm_common.tb_mst211m where nm =#{item.entryName}),
+            (select jbgd_nm from schm_common.tb_mst218m where jbgd_no = (select jbgd_no from schm_common.tb_mst211m where nm =#{item.entryName})),
+            #{item.entryName}
+        )
+        </foreach>
+    </insert>
+
+</mapper>

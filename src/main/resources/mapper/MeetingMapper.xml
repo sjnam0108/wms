@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bmp.wms.mapper.MeetingMapper">
+
+    <!-- resultMap 정의 -->
+    <resultMap type="com.bmp.wms.domain.Meeting" id="meetingResultMap">
+        <result property="mtgRsvtUnqNo" column="mtg_rsvt_unq_no"/>
+        <result property="wlcmMsgUnqNo" column="wlcm_msg_unq_no"/>
+        <result property="usrNo" column="usr_no"/>
+        <result property="mtgSprvsn" column="mtg_sprvsn"/>
+        <result property="mtgTtl" column="mtg_ttl"/>
+        <result property="mtgCn" column="mtg_cn"/>
+        <result property="mtgBgngDt" column="mtg_bgng_dt"/>
+        <result property="mtgEndDt" column="mtg_end_dt"/>
+        <result property="mtgStts" column="mtg_stts"/>
+        <result property="reptYn" column="rept_yn"/>
+        <result property="retp" column="rept"/>
+        <result property="rgstUserId" column="rgst_user_id"/>
+        <result property="rgstUserIp" column="rgst_user_ip"/>
+        <result property="rgstDtm" column="rgst_dtm"/>
+        <result property="updUserId" column="upd_user_id"/>
+        <result property="updUserIp" column="upd_user_ip"/>
+        <result property="updDtm" column="upd_dtm"/>
+        <result property="ognzNo" column="ognz_no"/>
+        <result property="ognzNm" column="ognz_nm"/>
+        <result property="jbgdNo" column="jbgd_no"/>
+        <result property="jbgdNm" column="jbgd_nm"/>
+    </resultMap>
+
+    <!-- 시퀀스 조회 -->
+    <select id="getNextMeetingSeq" resultType="java.math.BigDecimal">
+        SELECT nextval('schm_wms.mtg_rsvt_unq_no_seq');
+    </select>
+
+    <insert id="createMeeting" parameterType="com.bmp.wms.domain.Meeting">
+        Insert into schm_wms.tb_wms100m
+        ("mtg_rsvt_unq_no",
+        "wlcm_msg_unq_no",
+        "usr_no",
+        "mtg_sprvsn",
+        "mtg_ttl",
+        "mtg_cn",
+        "mtg_bgng_dt",
+        "mtg_end_dt",
+        "rgst_user_id",
+        "rgst_user_ip",
+        "rgst_dtm",
+        "upd_user_id",
+        "upd_user_ip",
+        "upd_dtm",
+        "ognz_no",
+        "ognz_nm",
+        "jbgd_no",
+        "jbgd_nm"
+        )
+        values(
+        nextval('schm_wms.mtg_rsvt_unq_no_seq'),
+        (select wlcm_msg_unq_no from schm_wms.tb_wms106h where msg_cn = #{welcomeMsg}),
+        (select usr_no from schm_common.tb_mst211m where usr_id =#{declare}),
+        #{agent},
+        #{title},
+        #{contents},
+        #{meetingStartDate},
+        #{meetingEndDate},
+        #{declare},
+        #{rgstUserIp},
+        now(),
+        #{declare},
+        #{updUserIp},
+        now(),
+        (select ognz_no from schm_common.tb_mst212m where usr_no =(select usr_no from schm_common.tb_mst211m where usr_id =#{declare})),
+        (select ognz_nm from schm_common.tb_mst208m where ognz_no = (select ognz_no from schm_common.tb_mst212m where usr_no =(select usr_no from schm_common.tb_mst211m where usr_id =#{declare}))),
+        (select jbgd_no from schm_common.tb_mst211m where usr_id =#{declare}),
+        (select jbgd_nm from schm_common.tb_mst218m where jbgd_no = (select jbgd_no from schm_common.tb_mst211m where usr_id =#{declare}))
+        )
+    </insert>
+
+    <select id="getMeetingByMeetingId" resultMap="meetingResultMap">
+        SELECT
+        mtg_stts,
+        mtg_sprvsn,
+        mtg_ttl,
+        mtg_bgng_dt,
+        mtg_end_dt,
+        mtg_cn,
+        wlcm_msg_unq_no,
+        mtg_rsvt_unq_no,
+        usr_no
+        FROM schm_wms.tb_wms100m WHERE mtg_rsvt_unq_no = #{meetingRoomId}
+    </select>
+
+    <select id="getMeetingByUserId" resultMap="meetingResultMap">
+        SELECT
+        w.mtg_stts,
+        w.mtg_sprvsn,
+        w.mtg_ttl,
+        w.mtg_bgng_dt,
+        w.mtg_end_dt,
+        w.mtg_cn,
+        w.wlcm_msg_unq_no,
+        w.mtg_rsvt_unq_no,
+        w.usr_no
+        FROM schm_wms.tb_wms100m as w
+        LEFT OUTER JOIN schm_common.tb_mst211m as m ON w.usr_no = m.usr_no
+        LEFT OUTER JOIN schm_wms.tb_wms101d as c ON w.mtg_rsvt_unq_no = c.mtg_rsvt_unq_no
+        WHERE m.usr_id = #{usrId}
+    </select>
+
+    <!-- 사용자 전체 조회 -->
+    <select id="getAllUserCount" parameterType="com.bmp.wms.util.PageUtil" resultType="int">
+        SELECT count(*) FROM schm_common.tb_mst211m
+        WHERE 1=1
+        <if test="searchString != ''">
+            <if test="searchColumn != 'usr_id'">
+                AND user_id LIKE '%' || #{searchString} || '%'
+            </if>
+            <if test="searchColumn != 'nm'">
+                AND nm LIKE '%' || #{searchString} || '%'
+            </if>
+        </if>
+    </select>
+
+    <!-- 사용자 전체 조회 -->
+    <select id="getAllUserList" parameterType="com.bmp.wms.util.PageUtil" resultMap="meetingResultMap">
+        SELECT
+        usr_no,
+        usr_id,
+        tnnt_id,
+        nm,
+        mbl_tel_no,
+        tel_no,
+        usr_type,
+        acnt_use_bgng_day,
+        acnt_use_end_day,
+        jbgd_no,
+        jbttl_cd,
+        zip,
+        bsc_addr,
+        dtl_addr,
+        stts,
+        eml,
+        confirm,
+        prfl_file_url,
+        prfl_org_file_nm,
+        prfl_save_file_nm,
+        last_cntn_dt,
+        rgst_user_id,
+        rgst_user_ip,
+        rgst_dtm,
+        upd_user_id,
+        upd_user_ip,
+        upd_dtm
+        FROM schm_common.tb_mst211m
+        WHERE 1=1
+        <if test="searchString != ''">
+            <if test="searchColumn != 'usr_id'">
+                AND usr_id LIKE '%' || #{searchString} || '%'
+            </if>
+            <if test="searchColumn != 'nm'">
+                AND nm LIKE '%' || #{searchString} || '%'
+            </if>
+        </if>
+        ORDER BY usr_no
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 사용자 정보 업데이트
+    <update id="updateUser" parameterType="com.bmp.wms.domain.MeetingRoom">
+        UPDATE schm_common.tb_mst211m
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="nm != null">nm = #{nm},</if>
+            <if test="mblTelNo != null">mbl_tel_no = #{mblTelNo},</if>
+            <if test="usrType != null">usr_type = #{usrType},</if>
+            <if test="acntUseBgngDay != null">acnt_use_bgng_day = #{acntUseBgngDay},</if>
+            <if test="acntUseEndDay != null">acnt_use_end_day = #{acntUseEndDay},</if>
+            <if test="jbgdNo != null">jbgd_no = #{jbgdNo},</if>
+            <if test="jbttlCd != null">jbttl_cd = #{jbttlCd},</if>
+            <if test="zip != null">zip = #{zip},</if>
+            <if test="bscAddr != null">bsc_addr = #{bscAddr},</if>
+            <if test="dtlAddr != null">dtl_addr = #{dtlAddr},</if>
+            <if test="stts != null">stts = #{stts},</if>
+            <if test="eml != null">eml = #{eml},</if>
+            <if test="confirm != null">confirm = #{confirm},</if>
+            <if test="prflFileUrl != null">prfl_file_url = #{prflFileUrl},</if>
+            <if test="prflOrgFileNm != null">prfl_org_file_nm = #{prflOrgFileNm},</if>
+            <if test="prflSaveFileNm != null">prfl_save_file_nm = #{prflSaveFileNm},</if>
+            <if test="updUserId != null">upd_user_id = #{updUserId},</if>
+            <if test="updUserIp != null">upd_user_ip = #{updUserIp},</if>
+            upd_dtm = now(),
+        </trim>
+        WHERE usr_id = #{usrId}
+    </update>
+-->
+</mapper>

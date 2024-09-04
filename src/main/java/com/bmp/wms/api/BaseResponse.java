@@ -21,6 +21,11 @@ public class BaseResponse<T> {
   private String transactionId;
 
   /**
+   * 시퀀스 번호입니다.
+   */
+  private String sequenceNo;
+
+  /**
    * 응답 코드입니다.
    */
   private String returnCode;

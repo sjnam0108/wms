@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bmp.wms.mapper.WelcomeMsgMapper">
+
+    <resultMap type="com.bmp.wms.domain.WelcomeMsg" id="welcomeMSgResultMap">
+        <result property="msgCn" column="msg_cn"/>
+        <result property="dpBgngDt" column="dp_bgng_dt"/>
+        <result property="dpEndDt" column="dp_end_dt"/>
+        <result property="rgstUserId" column="rgst_user_id"/>
+        <result property="rgstUserIp" column="rgst_user_ip"/>
+        <result property="rgstDtm" column="rgst_dtm"/>
+        <result property="updUserId" column="upd_user_id"/>
+        <result property="updUserIp" column="upd_user_ip"/>
+        <result property="updDtm" column="upd_dtm"/>
+    </resultMap>
+
+    <!-- 시퀀스 조회 -->
+    <select id="getNextWelcomeMsgSeq" resultType="java.math.BigDecimal">
+        SELECT nextval('schm_wms.mtg_rsvt_unq_no_seq');
+    </select>
+
+    <insert id="createWelcomeMsg" parameterType="com.bmp.wms.domain.WelcomeMsg">
+        Insert Into schm_wms.tb_wms106h(
+        "wlcm_msg_unq_no",
+        "mtg_rsvt_unq_no",
+        "msg_cn",
+        "dp_bgng_dt",
+        "dp_end_dt",
+        "rgst_user_id",
+        "rgst_user_ip",
+        "rgst_dtm",
+        "upd_user_id",
+        "upd_user_ip",
+        "upd_dtm")
+        values(nextval('schm_wms.mtg_rsvt_unq_no_seq'),
+        (CURRVAL('schm_wms.mtg_rsvt_unq_no_seq')),
+        #{welcomeMsg},
+        #{welcomeMsgStartDate},
+        #{welcomeMsgEndDate},
+        #{declare},
+        #{rgstUserIp},
+        now(),
+        #{declare},
+        #{updUserIp},
+        now())
+    </insert>
+</mapper>
